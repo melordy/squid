@@ -162,7 +162,6 @@ func (st *Tunnel) forwardSSH(conn net.Conn) {
 		logrus.Error(e)
 		return
 	}
-	logrus.Infof("connected to ssh host `%s`", st.configs.RemoteAddr)
 
 	sshClient := ssh.NewClient(sshConn, sshChan, sshReq)
 
@@ -172,8 +171,6 @@ func (st *Tunnel) forwardSSH(conn net.Conn) {
 		return
 	}
 	defer bindConn.Close()
-
-	logrus.Infof("successfully connected to `%s` through `%s`", st.configs.BindAddr, st.configs.RemoteAddr)
 
 	go io.Copy(bindConn, conn)
 	_, e = io.Copy(conn, bindConn)

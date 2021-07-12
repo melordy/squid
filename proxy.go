@@ -81,7 +81,6 @@ func (sp *Proxy) forwardConnection(conn net.Conn) {
 		logrus.Error(e)
 		return
 	}
-	logrus.Infof("successfully forwarding connection to `%s`", sp.addr)
 	go io.Copy(proxy, conn)
 	_, e = io.Copy(conn, proxy)
 	if e != nil {
