@@ -10,7 +10,6 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 
@@ -29,7 +28,7 @@ type TunnelConfig struct {
 	RemoteAddr string
 	BindAddr   string
 	SSH        bool
-	CertPath   string
+	Cert       string
 }
 
 type Tunnel struct {
@@ -145,7 +144,7 @@ func (st *Tunnel) forwardSSH(conn net.Conn) {
 		logrus.Error(e)
 		return
 	}
-	pemKey, e := st.getPemKey(st.configs.CertPath)
+	pemKey, e := st.getPemKey(st.configs.Cert)
 	if e != nil {
 		logrus.Error(e)
 		return
@@ -209,12 +208,8 @@ func (st *Tunnel) Close() error {
 	return st.lis.Close()
 }
 
-func (st *Tunnel) getPemKey(path string) (ssh.AuthMethod, error) {
-	key, e := os.ReadFile(path)
-	if e != nil {
-		return nil, e
-	}
-	signer, e := ssh.ParsePrivateKey(key)
+func (st *Tunnel) getPemKey(cert string) (ssh.AuthMethod, error) {
+	signer, e := ssh.ParsePrivateKey([]byte(cert))
 	if e != nil {
 		return nil, e
 	}
