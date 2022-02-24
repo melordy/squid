@@ -80,12 +80,12 @@ func (st *Tunnel) accept() {
 			if st.isClosed {
 				return
 			}
-			logrus.Error("HERE ONE", e)
+			logrus.Error(e)
 			continue
 		}
 		if st.onConnect != nil {
 			if e = st.onConnect(conn); e != nil {
-				logrus.Error("HERE TWO", e)
+				logrus.Error(e)
 				continue
 			}
 		}
@@ -136,12 +136,12 @@ func (st *Tunnel) forwardSSH(conn net.Conn) {
 	defer conn.Close()
 	h, e := url.Parse(fmt.Sprintf("http://%s", st.configs.ProxyAddr))
 	if e != nil {
-		logrus.Error("HERE THREE", e)
+		logrus.Error(e)
 		return
 	}
 	pconn, e := st.dialCoordinatorViaCONNECT(h)
 	if e != nil {
-		logrus.Error("HERE FOUR", e)
+		logrus.Error(e)
 		return
 	}
 
@@ -160,7 +160,7 @@ func (st *Tunnel) forwardSSH(conn net.Conn) {
 	}
 	sshConn, sshChan, sshReq, e := ssh.NewClientConn(pconn, st.configs.RemoteAddr, sshConfig)
 	if e != nil {
-		logrus.Error("HERE SIX", e)
+		logrus.Error(e)
 		return
 	}
 
@@ -168,7 +168,7 @@ func (st *Tunnel) forwardSSH(conn net.Conn) {
 
 	bindConn, e := sshClient.Dial("tcp", st.configs.BindAddr)
 	if e != nil {
-		logrus.Error("HERE SEVEN", e)
+		logrus.Error(e)
 		return
 	}
 	defer bindConn.Close()
@@ -176,7 +176,7 @@ func (st *Tunnel) forwardSSH(conn net.Conn) {
 	go io.Copy(bindConn, conn)
 	_, e = io.Copy(conn, bindConn)
 	if e != nil {
-		logrus.Error("HERE EIGHT", e)
+		logrus.Error(e)
 		return
 	}
 }
@@ -185,18 +185,18 @@ func (st *Tunnel) forwardConnection(conn net.Conn) {
 	defer conn.Close()
 	h, e := url.Parse(fmt.Sprintf("http://%s", st.configs.ProxyAddr))
 	if e != nil {
-		logrus.Error("HERE NINE", e)
+		logrus.Error(e)
 		return
 	}
 	pconn, e := st.dialCoordinatorViaCONNECT(h)
 	if e != nil {
-		logrus.Error("HERE TEN", e)
+		logrus.Error(e)
 		return
 	}
 	go io.Copy(pconn, conn)
 	_, e = io.Copy(conn, pconn)
 	if e != nil {
-		logrus.Error("HERE ELEVEN", e)
+		logrus.Error(e)
 		return
 	}
 }
@@ -211,8 +211,10 @@ func (st *Tunnel) Close() error {
 }
 
 func (st *Tunnel) getPemKey(cert string) (ssh.AuthMethod, error) {
+	logrus.Info("HERE AT GET PEM: ", cert)
 	signer, e := ssh.ParsePrivateKey([]byte(cert))
 	if e != nil {
+		logrus.Info("ERROR WITH SIGNER")
 		return nil, e
 	}
 	return ssh.PublicKeys(signer), e
