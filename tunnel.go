@@ -80,12 +80,12 @@ func (st *Tunnel) accept() {
 			if st.isClosed {
 				return
 			}
-			logrus.Error(e)
+			logrus.Error("HERE ONE", e)
 			continue
 		}
 		if st.onConnect != nil {
 			if e = st.onConnect(conn); e != nil {
-				logrus.Error(e)
+				logrus.Error("HERE TWO", e)
 				continue
 			}
 		}
@@ -136,17 +136,19 @@ func (st *Tunnel) forwardSSH(conn net.Conn) {
 	defer conn.Close()
 	h, e := url.Parse(fmt.Sprintf("http://%s", st.configs.ProxyAddr))
 	if e != nil {
-		logrus.Error(e)
+		logrus.Error("HERE THREE", e)
 		return
 	}
 	pconn, e := st.dialCoordinatorViaCONNECT(h)
 	if e != nil {
-		logrus.Error(e)
+		logrus.Error("HERE FOUR", e)
 		return
 	}
+
+	logrus.Info("CERT HERE: ", st.configs.Cert)
 	pemKey, e := st.getPemKey(st.configs.Cert)
 	if e != nil {
-		logrus.Error(e)
+		logrus.Error("HERE FIVE", e)
 		return
 	}
 	sshConfig := &ssh.ClientConfig{
@@ -158,7 +160,7 @@ func (st *Tunnel) forwardSSH(conn net.Conn) {
 	}
 	sshConn, sshChan, sshReq, e := ssh.NewClientConn(pconn, st.configs.RemoteAddr, sshConfig)
 	if e != nil {
-		logrus.Error(e)
+		logrus.Error("HERE SIX", e)
 		return
 	}
 
@@ -166,7 +168,7 @@ func (st *Tunnel) forwardSSH(conn net.Conn) {
 
 	bindConn, e := sshClient.Dial("tcp", st.configs.BindAddr)
 	if e != nil {
-		logrus.Error(e)
+		logrus.Error("HERE SEVEN", e)
 		return
 	}
 	defer bindConn.Close()
@@ -174,7 +176,7 @@ func (st *Tunnel) forwardSSH(conn net.Conn) {
 	go io.Copy(bindConn, conn)
 	_, e = io.Copy(conn, bindConn)
 	if e != nil {
-		logrus.Error(e)
+		logrus.Error("HERE EIGHT", e)
 		return
 	}
 }
@@ -183,18 +185,18 @@ func (st *Tunnel) forwardConnection(conn net.Conn) {
 	defer conn.Close()
 	h, e := url.Parse(fmt.Sprintf("http://%s", st.configs.ProxyAddr))
 	if e != nil {
-		logrus.Error(e)
+		logrus.Error("HERE NINE", e)
 		return
 	}
 	pconn, e := st.dialCoordinatorViaCONNECT(h)
 	if e != nil {
-		logrus.Error(e)
+		logrus.Error("HERE TEN", e)
 		return
 	}
 	go io.Copy(pconn, conn)
 	_, e = io.Copy(conn, pconn)
 	if e != nil {
-		logrus.Error(e)
+		logrus.Error("HERE ELEVEN", e)
 		return
 	}
 }
