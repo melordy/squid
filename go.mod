@@ -8,3 +8,5 @@ require (
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 )
+
+replace github.com/arkjxu/squid => github.com/melordy/squid v1.0.2
