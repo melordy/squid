@@ -1,4 +1,4 @@
-module github.com/arkjxu/squid
+module github.com/melordy/squid
 
 go 1.16
 

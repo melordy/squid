@@ -7,7 +7,7 @@ A simple TCP traffic forwarding package to help connecting to instances or hosts
 ```go
   package main
 
-  import "github.com/arkjxu/squid"
+  import "github.com/melordy/squid"
 
   ProxyURL := "example.proxy.com:443"
   proxy, e := squid.NewProxy(ProxyURL)
@@ -49,4 +49,4 @@ it might not work for your need, please use with caution.
 
 ## Author
 
-* Kevin Xu
+- Kevin Xu
